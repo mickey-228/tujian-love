@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>你的恋爱动物图鉴</title>
+<link rel="stylesheet" href="assets/crayon.css">
+</head>
+<body data-theme="love">
+<main class="wrap">
+
+  <section id="s-start">
+    <header class="masthead">
+      <span class="kicker" id="kicker"></span>
+      <h1 id="title"></h1>
+      <p class="lede" id="intro"></p>
+      <div class="meta">
+        <span><b id="qTotal">14</b> <span id="qUnit">题</span></span>
+        <span>约 4 分钟</span>
+        <span>无标准答案</span>
+      </div>
+    </header>
+
+    <div class="card">
+      <span class="tape"></span>
+      <p class="lede" id="startNote"></p>
+      <button class="btn" id="start"><span id="startLabel"></span> ✏️</button>
+    </div>
+  </section>
+
+  <section id="s-quiz" class="hidden">
+    <div class="card">
+      <span class="tape tl"></span>
+      <div class="progress">
+        <span class="num" id="pnum"></span>
+        <span class="bar"><i class="fill" id="pfill" style="width:7%"></i></span>
+      </div>
+      <span class="qtag" id="qtag"></span>
+      <div class="q" id="qtext"></div>
+      <div class="opts" id="opts"></div>
+      <div class="nav">
+        <button class="btn prev" id="prevBtn">← 上一题</button>
+        <button class="btn" id="nextBtn"><span class="lbl">下一题</span> →</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="s-result" class="hidden">
+    <div class="card">
+      <span class="tape tr"></span>
+      <div class="result-head">
+        <div class="plate" id="plate"></div>
+        <span class="rcode" id="rcode"></span>
+        <div class="rname" id="rname"></div>
+        <div class="rtag" id="rtag"></div>
+      </div>
+      <p class="portrait" id="portrait"></p>
+      <div class="detail" id="rdetail"></div>
+      <div class="match" id="rmatch"></div>
+      <div class="quote" id="rquote"></div>
+      <div class="bars">
+        <div class="bars-title">四型得分分布</div>
+        <div id="rbars"></div>
+      </div>
+      <div class="cta" id="rcta"></div>
+      <p class="disclaim" id="disclaimer"></p>
+      <button class="btn ghost" id="again">↺ 再测一次</button>
+    </div>
+  </section>
+
+  <div class="footer">图鉴系列 · 恋爱动物图鉴<br>趣味自测 · 不构成诊断</div>
+</main>
+
+<script>
+/* 焦虑度轴 / 回避度轴 → 四型 */
+function A(l){ return {jm:2-l, cw:2-l, ht:l, ll:l}; }
+function V(l){ return {jm:2-l, ht:2-l, cw:l, ll:l}; }
+
+window.QUIZ = {
+  kicker: "情爱图鉴 · 第壹册",
+  title: "你的恋爱动物图鉴",
+  intro: "十四道情境题，看看你在爱情里是<em>哪只小动物</em>。<br>没有标准答案，选最像你的那个。",
+  startNote: "这一册收录 <b>金毛 · 海獭 · 刺猬 · 流浪猫</b> 四种小动物。每条题只有一件事——选最像你的，别选「应该的」。",
+  startLabel: "翻开图鉴",
+  scoreUnit: " 分",
+  disclaimer: "<b>说明</b> 本测试为趣味自测，改编自《读懂恋人心》依恋理论通俗框架，仅用于自我了解，不构成诊断或人格标签；若关系中出现暴力、控制、威胁，请立即求助（报警 110 / 妇联 12338）。",
+  results: {
+    jm: { glyph:"🐶", code:"NO.00 · 稳定型", name:"金毛型", tag:"稳稳的，忠诚的",
+      portrait:"你能靠近，也能独处，不慌也不逃。恋爱里你既给得出依赖，也留得住自己——这样的人很少见，也很珍贵。",
+      detail:[
+        ["你平时会这样", ["能顺畅表达自己的需要，吵架也不会全盘否定这段感情","对方冷淡时，你能想到「可能不是因为我」","亲密之后更亲密，从不玩感情游戏"]],
+        ["为什么会这样", "你既相信别人，也相信自己的价值，不靠对方的反应来确认自己——是四种里最稳的一种。"],
+        ["怎么对自己更好", ["继续用「支持、不干涉、鼓励」的方式去爱人","守住自己的界限，别把自己熬成对方的情绪保姆"]],
+        ["要警惕", "稳定型不代表不会受伤；长期处在消耗型关系里，一样要及时止损。"]
+      ],
+      match:{ best:"同样稳的海獭型——你能给对方最缺的那份确定感。", worst:"刺猬型——你觉得 TA 太冷，TA 觉得你太黏。" },
+      quote:"你值得被爱，不需要先证明自己有用。" },
+
+    ht: { glyph:"🦦", code:"NO.10 · 焦虑型", name:"海獭型", tag:"牵手睡觉怕走散",
+      portrait:"你渴望亲密无间，但常常担心对方不够靠近，情绪跟着 TA 的一举一动起伏。你追的不是人，是「被爱着」的确定感。",
+      detail:[
+        ["你平时会这样", ["对方一冷淡，你先怀疑是不是自己做错了什么","消息没回就脑补，忍不住发很多条","用「说分手」试探对方会不会留自己","吵完架冷静下来，只想起对方的好"]],
+        ["为什么会这样", "依恋需要是生理需求，不是软弱。你追的不是那个人，是「被爱着的确定感」——但越追，对方往往越容易逃，形成「你追我逃」的循环。"],
+        ["怎么对自己更好", ["情绪上头时先停手：别发消息、别下结论，等情绪过去再判断","把「他爱不爱我」换成「我需要什么」，试着直接说出口"]],
+        ["要警惕", "焦虑不是病、也不是性格缺陷，依恋风格会随关系经验改变；若关系里出现暴力、控制、威胁，立刻求助。"]
+      ],
+      match:{ best:"金毛型——TA 的稳定，能接住你一响就慌的警报器。", worst:"刺猬型——你越追，TA 越逃，两个人一起陷进死循环。" },
+      quote:"你不是太黏，你只是太久没被好好回应。" },
+
+    cw: { glyph:"🦔", code:"NO.01 · 回避型", name:"刺猬型", tag:"靠太近会刺痛，太远会冷",
+      portrait:"你把独立和自由看得很重，一亲近就想保持距离。可刺猬不是不想取暖，只是怕疼——你的疏离下面，也藏着一颗想被懂的心。",
+      detail:[
+        ["你平时会这样", ["一亲近就想逃，总想保留自己的空间","对方想更亲近时，你会警觉、甚至开始挑他毛病","分手后反而觉得前任最好（怀念幻影般的前任）","习惯压抑感情，告诉自己「我不需要」"]],
+        ["为什么会这样", "你不是不需要亲密，是怕疼——靠太近曾让你受过伤，于是用「独立」当盾牌。刺猬不是不想取暖，只是怕被刺痛。"],
+        ["怎么对自己更好", ["承认「我需要空间」是合理的，但试着把「我想静一静」说出口，而不是直接消失","给亲密一个低剂量尝试，从一件小事开始慢慢敞开"]],
+        ["要警惕", "回避不是没救，也别用「我不适合恋爱」当理由，拒绝一切靠近。"]
+      ],
+      match:{ best:"金毛型——TA 不逼你，你反而会慢慢把刺收起来。", worst:"海獭型——TA 越靠近，你越想退，最后互相伤害。" },
+      quote:"你想被懂，只是先学会了推开人。" },
+
+    ll: { glyph:"🐱", code:"NO.11 · 矛盾型", name:"流浪猫型", tag:"又想要，又推开",
+      portrait:"你既渴望亲密，又害怕亲密，忽冷忽热连自己都说不清。想要被抱，又怕被束缚，是四只里最纠结、也最真实的一只。",
+      detail:[
+        ["你平时会这样", ["既渴望亲密，又害怕亲密，忽冷忽热","想被抱又怕被束缚，连自己也说不清到底要什么","常常在「靠近」和「逃跑」之间来回切换"]],
+        ["为什么会这样", "高回避和高焦虑同时存在——一边怕被抛下，一边怕被吞没，两头撕扯，所以最纠结。"],
+        ["怎么对自己更好", ["针对焦虑型和回避型的两套建议，对你都适用","先停下来识别自己此刻是「想靠近」还是「想逃」，再决定怎么说"]],
+        ["要警惕", "这一型比例小、也最辛苦；如果长期内耗，值得找专业帮助（临床心理科 / 精神科），别硬扛。"]
+      ],
+      match:{ best:"稳重又耐心的人——你需要一个不跑、也不逼你的人。", worst:"同样纠结的人——两个人互相试探，最累。" },
+      quote:"又想要又推开，不是你的错，是你在保护自己。" }
+  },
+  cta: {
+    eyebrow: "测完想再深一点？",
+    title: "我把《读懂恋人心》读透了，做成了一份精华",
+    lead: "上面这套图鉴，框架来自依恋理论。我把它连同另外两本亲密关系书，一本本啃完、逐条核验，做成了可以直接用的拆书稿：",
+    items: [
+      "《读懂恋人心》——依恋风格、越追越逃、安全基地、分手与沟通",
+      "《亲密关系》——关系里的期待、冲突与修复",
+      "《幸福的婚姻》——长期关系怎么经营才有救",
+      "含「结论速查」逐条可引用，引文逐字核对过出处"
+    ],
+    foot: "想要完整精华 → <b>评论区扣「图鉴」</b>，或私信我。<br>（这一行请替换成你自己的店铺 / 联系方式）"
+  },
+  questions: [
+    { tag:"第 1 题 · 回消息", text:"你发消息给 TA，两小时没回。你心里冒出的第一个念头是？",
+      opts:[ {label:"可能忙，等会再说", scores:A(0)}, {label:"是不是我说错话了？有点不安", scores:A(1)}, {label:"开始脑补他是不是在跟别人聊天", scores:A(2)} ] },
+    { tag:"第 2 题 · 爽约", text:"TA 说今晚加班，不陪你了。你的反应是？",
+      opts:[ {label:"好，你忙，我自己找事做", scores:A(0)}, {label:"有点失落，但能理解", scores:A(1)}, {label:"反复想「他是不是不想见我了」", scores:A(2)} ] },
+    { tag:"第 3 题 · 冷静一下", text:"你们吵架了，TA 说「先冷静一下」。你会？",
+      opts:[ {label:"好，给彼此一点空间", scores:A(0)}, {label:"忍住，但心里七上八下", scores:A(1)}, {label:"追着要马上说清楚，不说清楚睡不着", scores:A(2)} ] },
+    { tag:"第 4 题 · 前任", text:"TA 无意间提起前任。你的感觉是？",
+      opts:[ {label:"正常聊聊，没什么", scores:A(0)}, {label:"有点在意，但不深究", scores:A(1)}, {label:"心里警铃大作，开始拿自己和 TA 比", scores:A(2)} ] },
+    { tag:"第 5 题 · 平淡期", text:"关系进入平淡期，TA 没以前那么热络了。你？",
+      opts:[ {label:"觉得正常，感情本来有起有伏", scores:A(0)}, {label:"有点慌，但能自己调节", scores:A(1)}, {label:"认定「他不爱我了」，开始试探", scores:A(2)} ] },
+    { tag:"第 6 题 · 点赞", text:"你刷到 TA 点赞了别人的动态。你？",
+      opts:[ {label:"没注意", scores:A(0)}, {label:"扫一眼，不太在意", scores:A(1)}, {label:"点进去看是谁，脑补一出戏", scores:A(2)} ] },
+    { tag:"第 7 题 · 出差", text:"TA 说要出差一周，一周见不到。你？",
+      opts:[ {label:"挺好，各自忙各自的", scores:A(0)}, {label:"会想 TA，但日子照过", scores:A(1)}, {label:"心里发慌，忍不住反复确认 TA 的行程", scores:A(2)} ] },
+    { tag:"第 8 题 · 报备", text:"TA 想每天报备行程、随时联系。你的感受是？",
+      opts:[ {label:"很好啊，我也喜欢这样", scores:V(0)}, {label:"可以，但别太黏", scores:V(1)}, {label:"有点喘不过气，想逃", scores:V(2)} ] },
+    { tag:"第 9 题 · 下一步", text:"关系进展到要见家长 / 谈婚论嫁了。你？",
+      opts:[ {label:"期待，想更进一步", scores:V(0)}, {label:"可以，但想慢慢来", scores:V(1)}, {label:"下意识想找理由往后拖", scores:V(2)} ] },
+    { tag:"第 10 题 · 倾诉", text:"TA 情绪很低落，想跟你倾诉心事。你？",
+      opts:[ {label:"认真听，好好安慰", scores:V(0)}, {label:"能听，但不太知道怎么回应", scores:V(1)}, {label:"有点想躲开，觉得好累", scores:V(2)} ] },
+    { tag:"第 11 题 · 我爱你", text:"TA 认真说「我爱你」，期待你也回应。你？",
+      opts:[ {label:"自然地回应", scores:V(0)}, {label:"会说，但偶尔觉得别扭", scores:V(1)}, {label:"浑身不自在，想岔开话题", scores:V(2)} ] },
+    { tag:"第 12 题 · 独处", text:"当你需要自己的独处时间时，你会？",
+      opts:[ {label:"告诉 TA，然后各自忙", scores:V(0)}, {label:"有时会想一个人待着", scores:V(1)}, {label:"经常觉得 TA 侵占了我的空间", scores:V(2)} ] },
+    { tag:"第 13 题 · 敞开", text:"你们越来越亲密，TA 想更了解你的内心。你？",
+      opts:[ {label:"开心地分享", scores:V(0)}, {label:"能分享一部分", scores:V(1)}, {label:"想保留很多，不愿完全敞开", scores:V(2)} ] },
+    { tag:"第 14 题 · 共同未来", text:"TA 开始认真规划你们的共同未来。你？",
+      opts:[ {label:"我也想要，越想越踏实", scores:V(0)}, {label:"可以，但别太快", scores:V(1)}, {label:"有点想逃，觉得被绑住了", scores:V(2)} ] }
+  ]
+};
+</script>
+<script src="assets/quiz.js"></script>
+</body>
+</html>
