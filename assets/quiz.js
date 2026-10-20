@@ -69,7 +69,7 @@
       var k = document.createElement("span"); k.className = "k"; k.textContent = LETTERS[i];
       var t = document.createElement("span"); t.textContent = o.label;
       b.appendChild(k); b.appendChild(t);
-      b.onclick = function () { answers[idx] = i; renderQ(); };
+      b.onclick = function () { answers[idx] = i; go(1); };
       box.appendChild(b);
     });
 
@@ -129,10 +129,11 @@
 
     var mBox = $("rmatch"); mBox.innerHTML = "";
     if (r.match) {
-      var t = document.createElement("div"); t.className = "match-title"; t.textContent = "配对图鉴";
+      var labels = Q.matchLabels || { good: "最合拍", bad: "最容易出事" };
+      var t = document.createElement("div"); t.className = "match-title"; t.textContent = Q.matchTitle || "配对图鉴";
       mBox.appendChild(t);
-      if (r.match.best) mBox.appendChild(row("good", "最合拍", r.match.best));
-      if (r.match.worst) mBox.appendChild(row("bad", "最容易出事", r.match.worst));
+      if (r.match.best) mBox.appendChild(row("good", labels.good, r.match.best));
+      if (r.match.worst) mBox.appendChild(row("bad", labels.bad, r.match.worst));
     } else { mBox.classList.add("hidden"); }
 
     var qBox = $("rquote");
